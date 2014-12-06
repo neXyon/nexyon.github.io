@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="30" height="16" tilewidth="64" tileheight="64">
- <tileset firstgid="1" name="Grass" tilewidth="64" tileheight="64">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="34" height="20" tilewidth="64" tileheight="64">
+ <tileset firstgid="1" name="grass" tilewidth="64" tileheight="64">
   <image source="grass.png" trans="ff00ff" width="384" height="384"/>
  </tileset>
- <layer name="Tile Layer 1" width="30" height="16">
+ <layer name="background" width="34" height="20">
   <data encoding="base64" compression="zlib">
-   eJy9VDEOgDAIrA7VwcHFsdHB/7/Rmki8NFAojZLcYOKVAw5C8MWQMTKIHXwLd8qYGSzGvBzfwt0zDgYn/FOrieMjF6N8R+uLtybtHe0NrGnNSMBpmWnZG6kvkuY77/bkS4WOr4LyEo7wauf2wtILaadqPkI93F5Y5tjDlfbiBs0R64oKd33ybgKn5cZgXZ4eLKC9xVNYl+Zl6S6Qv+jbe29rnuL4pIfCe29rnurxlaefLfy/4wI+ug1u
+   eJztVTEOgDAIrA66OLh01qH/f6N1aEIuXKGkg4OXsNjeySFISj9mYqmxKrFN1PNo7eT5EcxD0/NoXTVuJYq4M+JR0yvkLupadYt6tIC6lqb0eBJOpCewdqxuGpqHDO9FzKiXJw/EnXRvkflhMyy5rK9H8rZqxbx6uAy9+ZG+N4PT+jITTkPkHyh9R2r0cvAb4rkH0rc1K6yumB+eR/dFr0c1PuaHiO6LXo96+AjPvhjhefk/vokHkAALvg==
   </data>
  </layer>
- <layer name="Tile Layer 2" width="30" height="16">
+ <layer name="platforms" width="34" height="20">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUUAswDrQDRsEoGAVDBgAAC7AAAg==
+   eJxjYBgFwxVwYMHUNG84Alr5kRIzZanoDkoANnfIomF6uWMg7KUUkJO2sOXhwZL3aOkOSsIIGxjItDJU0im56QxXGh0s6XQUDF0AAIUvA1Y=
   </data>
  </layer>
 </map>
