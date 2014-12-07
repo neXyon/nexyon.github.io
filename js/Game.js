@@ -103,8 +103,12 @@ VeggieWar.Game.prototype = {
 
         if(this.player.body.velocity.x < 0) {
             this.player.scale.x = 1;
+            this.player.bringToTop();
+            this.left_hand.bringToTop();
         } else if(this.player.body.velocity.x > 0) {
             this.player.scale.x = -1;
+            this.player.bringToTop();
+            this.right_hand.bringToTop();
         }
 
         var speed = 100;
