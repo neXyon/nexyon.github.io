@@ -18,7 +18,7 @@ VeggieWar.Hand = function (player, left) {
     this.left = left;
 
     this.create();
-}
+};
 
 VeggieWar.Hand.prototype = {
     setState: function(state) {
@@ -108,9 +108,73 @@ VeggieWar.Hand.prototype = {
             }
         }
     }
-}
+};
 
-VeggieWar.Player = function (game) {
+VeggieWar.GamePadController = function() {
+};
+
+VeggieWar.GamePadController.prototype = {
+    create: function(player) {
+        this.player = player;
+        this.left = false;
+        this.right = false;
+        this.up = false;
+        this.down = false;
+
+        this.player.game.input.gamepad.start();
+
+        this.pad = this.player.game.input.gamepad.pad1;
+        this.isdown = false;
+    },
+
+    update: function() {
+        var isdown = this.pad.isDown(Phaser.Gamepad.XBOX360_RIGHT_TRIGGER);
+        if(isdown != this.isdown) {
+            this.isdown = isdown;
+            if(isdown) {
+                var direction = new Phaser.Point(this.pad.axis(Phaser.Gamepad.XBOX360_STICK_RIGHT_X), this.pad.axis(Phaser.Gamepad.XBOX360_STICK_RIGHT_Y))
+                this.player.fire(direction);
+            }
+        }
+
+        this.left = this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT) || this.pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -0.1;
+        this.right = this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT) || this.pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) > 0.1;
+        this.up = this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_UP) || this.pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) < -0.1;
+        this.down = this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_DOWN) || this.pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) > 0.1;
+    }
+};
+
+VeggieWar.KeyboardMouseController = function() {
+};
+
+VeggieWar.KeyboardMouseController.prototype = {
+    mouseDown: function() {
+        var direction = new Phaser.Point(this.player.game.input.x + this.player.game.camera.x - this.player.player.position.x,
+            this.player.game.input.y + this.player.game.camera.y - this.player.player.position.y);
+
+        this.player.fire(direction);
+    },
+
+    create: function(player) {
+        this.player = player;
+        this.left = false;
+        this.right = false;
+        this.up = false;
+        this.down = false;
+
+        this.player.game.input.onDown.add(this.mouseDown, this);
+        this.cursors = this.player.game.input.keyboard.createCursorKeys();
+    },
+
+    update: function() {
+        this.left = this.cursors.left.isDown;
+        this.right = this.cursors.right.isDown;
+        this.up = this.cursors.up.isDown;
+        this.down = this.cursors.down.isDown;
+    }
+};
+
+VeggieWar.Player = function (game, controller) {
     this.game = game.game;
     this.veggie = game;
     this.GRAVITY = 400;
@@ -119,6 +183,10 @@ VeggieWar.Player = function (game) {
     this.PLAYER_AIR_ACCELERATION = 100;
     this.PLAYER_JUMP_VELOCITY = 300;
     this.PLAYER_JUMP_SPEED_FACTOR = 1.4;
+
+    this.controller = controller;
+
+    this.create();
 };
 
 VeggieWar.Player.prototype = {
@@ -156,12 +224,6 @@ VeggieWar.Player.prototype = {
         }
     },
 
-    mouseDown: function() {
-        var direction = new Phaser.Point(this.game.input.x  + this.game.camera.x - this.player.position.x, this.game.input.y + this.game.camera.y - this.player.position.y);
-
-        this.fire(direction);
-    },
-
     create: function () {
         //this.group = this.game.add.group();
 
@@ -178,14 +240,15 @@ VeggieWar.Player.prototype = {
 
         this.rope_distance = 0;
 
-        this.cursors = this.game.input.keyboard.createCursorKeys();
-        this.game.input.onDown.add(this.mouseDown, this);
-
         this.move = {x: 0};
         this.movetween = null;
+
+        this.controller.create(this);
     },
 
     update: function() {
+        this.controller.update();
+
         this.game.physics.arcade.collide(this.player, this.veggie.platformLayer);
 
         var stop_move_tween = true;
@@ -195,11 +258,11 @@ VeggieWar.Player.prototype = {
         if(this.on_rope == null) {
             // ground movement
             if(this.player.body.onFloor()) {
-                if(this.cursors.left.isDown) {
+                if(this.controller.left) {
                     this.player.body.velocity.x = -this.PLAYER_MOVE_SPEED;
                     stop_move_tween = false;
                 }
-                else if(this.cursors.right.isDown) {
+                else if(this.controller.right) {
                     this.player.body.velocity.x = this.PLAYER_MOVE_SPEED;
                     stop_move_tween = false;
                 }
@@ -207,7 +270,7 @@ VeggieWar.Player.prototype = {
                     this.player.body.velocity.x = 0;
                 }
 
-                if(this.cursors.up.isDown) {
+                if(this.controller.up) {
                     stop_move_tween = true;
                     this.player.body.velocity.y = -this.PLAYER_JUMP_VELOCITY;
                     this.player.body.velocity.x *= this.PLAYER_JUMP_SPEED_FACTOR;
@@ -215,10 +278,10 @@ VeggieWar.Player.prototype = {
             }
             // air movement
             else {
-                if(this.cursors.left.isDown) {
+                if(this.controller.left) {
                     this.player.body.velocity.x -= this.game.time.physicsElapsed * this.PLAYER_AIR_ACCELERATION;
                 }
-                else if(this.cursors.right.isDown) {
+                else if(this.controller.right) {
                     this.player.body.velocity.x += this.game.time.physicsElapsed * this.PLAYER_AIR_ACCELERATION;
                 }
             }
@@ -227,19 +290,19 @@ VeggieWar.Player.prototype = {
         else {
             var player_accel = 0;
 
-            if(this.cursors.left.isDown) {
+            if(this.controller.left) {
                 player_accel = -100;
             }
-            else if(this.cursors.right.isDown) {
+            else if(this.controller.right) {
                 player_accel = 100;
             }
 
-            if(this.cursors.up.isDown) {
+            if(this.controller.up) {
                 if(this.rope_distance > 12) {
                     this.rope_distance -= this.game.time.physicsElapsed * 100;
                 }
             }
-            else if(this.cursors.down.isDown) {
+            else if(this.controller.down) {
                 if(this.rope_distance < 200) {
                     this.rope_distance += this.game.time.physicsElapsed * 100;
                 }
@@ -327,5 +390,5 @@ VeggieWar.Player.prototype = {
         this.player.body.offset.y = this.move.x;
         this.player.position.y -= this.move.x;
     }
-}
+};
 

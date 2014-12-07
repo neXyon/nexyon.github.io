@@ -20,11 +20,12 @@ VeggieWar.Game.prototype = {
 
         this.game.physics.arcade.TILE_BIAS = 32;
 
-        this.player = new VeggieWar.Player(this);
-        this.player.create();
+        this.player = new VeggieWar.Player(this, new VeggieWar.GamePadController());
+        this.player2 = new VeggieWar.Player(this, new VeggieWar.KeyboardMouseController());
     },
 
     update: function() {
         this.player.update();
+        this.player2.update();
     }
-}
+};
