@@ -4,6 +4,15 @@ VeggieWar.Game = function () {
 };
 
 VeggieWar.Game.prototype = {
+    mouseDown: function() {
+        this.hand_goal = {x: this.game.input.x + this.game.camera.x, y: this.game.input.y + this.game.camera.y, hand: this.left_hand};
+
+        if(this.player.position.x > this.hand_goal.x) {
+            this.hand_goal.hand = this.right_hand;
+        }
+
+    },
+
     create: function () {
         this.map = this.game.add.tilemap('map');
 
@@ -34,8 +43,11 @@ VeggieWar.Game.prototype = {
         this.game.physics.arcade.enable(this.player);
         this.player.body.gravity.y = 400;
 
+        this.hand_goal = null;
 
         this.cursors = this.game.input.keyboard.createCursorKeys();
+        this.game.input.onDown.add(this.mouseDown, this);
+
 
         this.game.physics.arcade.TILE_BIAS = 32;
 
@@ -111,11 +123,34 @@ VeggieWar.Game.prototype = {
             this.right_hand.bringToTop();
         }
 
-        var speed = 100;
+        var speed = 1000;
         var maxtime = 40;
 
-        this.game.physics.arcade.moveToXY(this.left_hand, this.player.position.x + 16, this.player.position.y + 4, speed, maxtime);
-        this.game.physics.arcade.moveToXY(this.right_hand, this.player.position.x - 16, this.player.position.y + 4, speed, maxtime);
+        var doleft = true;
+        var doright = true;
+
+        if(this.hand_goal != null) {
+            this.game.physics.arcade.moveToXY(this.hand_goal.hand, this.hand_goal.x, this.hand_goal.y, speed);
+            var dx = this.hand_goal.x - this.hand_goal.hand.position.x;
+            var dy = this.hand_goal.y - this.hand_goal.hand.position.y;
+            if(dx * dx + dy * dy < 100) {
+                this.hand_goal = null;
+            }
+            else {
+                if(this.hand_goal.hand == this.left_hand) {
+                    doleft = false;
+                }
+                else {
+                    doright = false;
+                }
+            }
+        }
+        if(doleft) {
+            this.game.physics.arcade.moveToXY(this.left_hand, this.player.position.x + 16, this.player.position.y + 4, speed, maxtime);
+        }
+        if(doright) {
+            this.game.physics.arcade.moveToXY(this.right_hand, this.player.position.x - 16, this.player.position.y + 4, speed, maxtime);
+        }
 
         if(stoptween) {
             if(this.movetween != null) {
