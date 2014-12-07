@@ -55,7 +55,7 @@ VeggieWar.Hand.prototype = {
         }
     },
 
-    update: function() {
+    update: function(players) {
         this.elapsed += this.game.time.physicsElapsedMS;
         if(this.state == this.STATE_FOLLOW) {
             // hands follow player
@@ -110,10 +110,16 @@ VeggieWar.Hand.prototype = {
     }
 };
 
-VeggieWar.GamePadController = function() {
+VeggieWar.GamePadController = function(pad, game) {
+    this.pad = pad;
+    this.game = game;
 };
 
 VeggieWar.GamePadController.prototype = {
+    isReady: function() {
+        return this.game.input.gamepad.supported && this.game.input.gamepad.active && this.pad.connected;
+    },
+
     create: function(player) {
         this.player = player;
         this.left = false;
@@ -121,9 +127,6 @@ VeggieWar.GamePadController.prototype = {
         this.up = false;
         this.down = false;
 
-        this.player.game.input.gamepad.start();
-
-        this.pad = this.player.game.input.gamepad.pad1;
         this.isdown = false;
     },
 
@@ -148,6 +151,10 @@ VeggieWar.KeyboardMouseController = function() {
 };
 
 VeggieWar.KeyboardMouseController.prototype = {
+    isReady: function() {
+        return true;
+    },
+
     mouseDown: function() {
         var direction = new Phaser.Point(this.player.game.input.x + this.player.game.camera.x - this.player.player.position.x,
             this.player.game.input.y + this.player.game.camera.y - this.player.player.position.y);
@@ -246,7 +253,7 @@ VeggieWar.Player.prototype = {
         this.controller.create(this);
     },
 
-    update: function() {
+    update: function(players) {
         this.controller.update();
 
         this.game.physics.arcade.collide(this.player, this.veggie.platformLayer);
@@ -332,8 +339,8 @@ VeggieWar.Player.prototype = {
             this.player.body.velocity.setTo(d.x * dlength, d.y * dlength);//*/
         }
 
-        this.left_hand.update();
-        this.right_hand.update();
+        this.left_hand.update(players);
+        this.right_hand.update(players);
 
         // warp player on the side of the screen
 

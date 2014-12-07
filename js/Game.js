@@ -20,12 +20,31 @@ VeggieWar.Game.prototype = {
 
         this.game.physics.arcade.TILE_BIAS = 32;
 
-        this.player = new VeggieWar.Player(this, new VeggieWar.GamePadController());
-        this.player2 = new VeggieWar.Player(this, new VeggieWar.KeyboardMouseController());
+        this.game.input.gamepad.start();
+
+        this.players = [];
+
+        this.controllers = [];
+
+        this.controllers.push(new VeggieWar.KeyboardMouseController());
+        this.controllers.push(new VeggieWar.GamePadController(this.game.input.gamepad.pad1, this.game));
+        this.controllers.push(new VeggieWar.GamePadController(this.game.input.gamepad.pad2, this.game));
+        this.controllers.push(new VeggieWar.GamePadController(this.game.input.gamepad.pad3, this.game));
+        this.controllers.push(new VeggieWar.GamePadController(this.game.input.gamepad.pad4, this.game));
     },
 
     update: function() {
-        this.player.update();
-        this.player2.update();
+
+        for(var i = 0; i < this.controllers.length; i++) {
+            if(this.controllers[i].isReady()) {
+                this.players.push(new VeggieWar.Player(this, this.controllers[i]));
+                this.controllers.splice(i, 1);
+                i--;
+            }
+        }
+
+        for(var i = 0; i < this.players.length; i++) {
+            this.players[i].update(players);
+        }
     }
 };
