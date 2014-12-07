@@ -44,10 +44,13 @@ VeggieWar.Game.prototype = {
         this.player.body.gravity.y = 400;
 
         this.hand_goal = null;
+        this.on_rope = false;
+        this.rope_energy = 0;
+
+        this.rope_distance = 0;
 
         this.cursors = this.game.input.keyboard.createCursorKeys();
         this.game.input.onDown.add(this.mouseDown, this);
-
 
         this.game.physics.arcade.TILE_BIAS = 32;
 
@@ -85,31 +88,33 @@ VeggieWar.Game.prototype = {
 
         var stoptween = true;
 
-        if(this.player.body.onFloor()) {
-            if(this.cursors.left.isDown) {
-                this.player.body.velocity.x = -100;
-                stoptween = false;
-            }
-            else if(this.cursors.right.isDown) {
-                this.player.body.velocity.x = 100;
-                stoptween = false;
+        if(!this.on_rope) {
+            if(this.player.body.onFloor()) {
+                if(this.cursors.left.isDown) {
+                    this.player.body.velocity.x = -100;
+                    stoptween = false;
+                }
+                else if(this.cursors.right.isDown) {
+                    this.player.body.velocity.x = 100;
+                    stoptween = false;
+                }
+                else {
+                    this.player.body.velocity.x = 0;
+                }
+
+                if(this.cursors.up.isDown) {
+                    stoptween = true;
+                    this.player.body.velocity.y = -300;
+                    this.player.body.velocity.x *= 1.4;
+                }
             }
             else {
-                this.player.body.velocity.x = 0;
-            }
-
-            if(this.cursors.up.isDown) {
-                stoptween = true;
-                this.player.body.velocity.y = -300;
-                this.player.body.velocity.x *= 1.4;
-            }
-        }
-        else {
-            if(this.cursors.left.isDown) {
-                this.player.body.velocity.x -= this.game.time.physicsElapsed * 100;
-            }
-            else if(this.cursors.right.isDown) {
-                this.player.body.velocity.x += this.game.time.physicsElapsed * 100;
+                if(this.cursors.left.isDown) {
+                    this.player.body.velocity.x -= this.game.time.physicsElapsed * 100;
+                }
+                else if(this.cursors.right.isDown) {
+                    this.player.body.velocity.x += this.game.time.physicsElapsed * 100;
+                }
             }
         }
 
@@ -129,22 +134,107 @@ VeggieWar.Game.prototype = {
         var doleft = true;
         var doright = true;
 
-        if(this.hand_goal != null) {
-            this.game.physics.arcade.moveToXY(this.hand_goal.hand, this.hand_goal.x, this.hand_goal.y, speed);
-            var dx = this.hand_goal.x - this.hand_goal.hand.position.x;
-            var dy = this.hand_goal.y - this.hand_goal.hand.position.y;
-            if(dx * dx + dy * dy < 100) {
-                this.hand_goal = null;
+        if(this.on_rope) {
+            if(this.hand_goal.hand == this.left_hand) {
+                doleft = false;
             }
             else {
-                if(this.hand_goal.hand == this.left_hand) {
-                    doleft = false;
+                doright = false;
+            }
+
+            var player_accel = 0;
+
+            if(this.cursors.left.isDown) {
+                player_accel = -100;
+            }
+            else if(this.cursors.right.isDown) {
+                player_accel = 100;
+            }
+
+            if(this.cursors.up.isDown) {
+                if(this.rope_distance > 12) {
+                    this.rope_distance -= this.game.time.physicsElapsed * 100;
+                    this.rope_energy -= this.game.time.physicsElapsed * 100 * 400;
+                }
+            }
+            else if(this.cursors.down.isDown) {
+                if(this.rope_distance < 200) {
+                    this.rope_distance += this.game.time.physicsElapsed * 100;
+                    this.rope_energy += this.game.time.physicsElapsed * 100 * 400;
+                }
+            }
+
+            var d = Phaser.Point.subtract(this.player.position, this.hand_goal.hand.position);
+            var dlength = d.getMagnitude();
+            Phaser.Point.multiplyAdd(this.hand_goal.hand.position, d, this.rope_distance / dlength, this.player.position);
+
+            if(d.x > 0) {
+                d.perp();
+            }
+            else {
+                d.rperp();
+            }
+
+            d.multiply(1 / dlength, 1 / dlength);
+            dlength = d.y * 400;
+            this.player.body.acceleration.setTo(dlength * d.x + player_accel, dlength * d.y);
+
+            dlength = this.player.body.velocity.getMagnitude() * 0.999;
+
+            //var h = this.hand_goal.hand.position.y + this.rope_distance - this.player.position.y;
+            //dlength = Math.sqrt((this.rope_energy - 400 * h) * 2);
+
+            if(this.player.body.velocity.dot(d) < 0) {
+                d.multiply(-1, -1);
+            }
+
+            this.player.body.velocity.setTo(d.x * dlength, d.y * dlength);
+
+            /*var amp = 400 * d.y / (dlength * dlength);
+
+            d.setTo(-amp * d.x, 400 - amp * d.y);
+
+            this.player.body.acceleration.setTo(d.x, d.y);
+
+            d.normalize();
+            dlength = this.player.body.velocity.getMagnitude();
+            this.player.body.velocity.set(d.x * dlength, d.y * dlength);*/
+        }
+        else {
+            if(this.hand_goal != null) {
+                this.game.physics.arcade.moveToXY(this.hand_goal.hand, this.hand_goal.x, this.hand_goal.y, speed);
+                var dx = this.hand_goal.x - this.hand_goal.hand.position.x;
+                var dy = this.hand_goal.y - this.hand_goal.hand.position.y;
+                if(dx * dx + dy * dy < 100) {
+                    this.hand_goal = null;
                 }
                 else {
-                    doright = false;
+                    this.hand_goal.hand.blocked = false;
+                    this.game.physics.arcade.overlap(this.hand_goal.hand, this.platformLayer);
+
+                    var touching = this.hand_goal.hand.body.blocked;
+                    touching = touching.left || touching.right || touching.up || touching.down;
+
+                    if(touching) {
+                        this.on_rope = true;
+                        this.player.body.velocity.setTo(0, 0);
+                        this.player.body.gravity.y = 0;
+
+                        this.rope_distance = Phaser.Point.distance(this.hand_goal.hand.position, this.player.position);
+                        this.rope_energy = 400 * (this.hand_goal.hand.position.y + this.rope_distance - this.player.position.y);
+
+                        this.hand_goal.hand.body.velocity.set(0, 0);
+                    }
+                    if(this.hand_goal.hand == this.left_hand) {
+                        doleft = false;
+                    }
+                    else {
+                        doright = false;
+                    }
                 }
             }
         }
+
         if(doleft) {
             this.game.physics.arcade.moveToXY(this.left_hand, this.player.position.x + 16, this.player.position.y + 4, speed, maxtime);
         }
