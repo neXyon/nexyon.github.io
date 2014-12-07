@@ -19,8 +19,21 @@ VeggieWar.Game.prototype = {
         this.game.camera.update();
 
         this.player = this.game.add.sprite(1024, 600, 'player');
+        this.player.anchor.setTo(0.5, 0.5);
+
+        this.left_hand = this.game.add.sprite(1024 + 16, 600 + 2, 'hand');
+        this.left_hand.anchor.setTo(0.5, 0.5);
+        this.game.physics.arcade.enable(this.left_hand);
+        this.left_hand.body.allowRotation = false;
+        this.right_hand = this.game.add.sprite(1024 - 16, 600 + 2, 'hand');
+        this.right_hand.scale.x = -1;
+        this.right_hand.anchor.setTo(0.5, 0.5);
+        this.game.physics.arcade.enable(this.right_hand);
+        this.right_hand.body.allowRotation = false;
+
         this.game.physics.arcade.enable(this.player);
         this.player.body.gravity.y = 400;
+
 
         this.cursors = this.game.input.keyboard.createCursorKeys();
 
@@ -32,20 +45,28 @@ VeggieWar.Game.prototype = {
 
     update: function() {
 
-        if(this.player.position.x < 0) {
+        if(this.player.position.x < VeggieWar.PLAYER_MAX_WIDTH / 2) {
             this.player.position.x += VeggieWar.SCREEN_WIDTH + VeggieWar.PLAYER_MAX_WIDTH;
+            this.left_hand.position.x += VeggieWar.SCREEN_WIDTH + VeggieWar.PLAYER_MAX_WIDTH;
+            this.right_hand.position.x += VeggieWar.SCREEN_WIDTH + VeggieWar.PLAYER_MAX_WIDTH;
         }
 
-        if(this.player.position.x > VeggieWar.SCREEN_WIDTH + VeggieWar.PLAYER_MAX_WIDTH) {
+        if(this.player.position.x > VeggieWar.SCREEN_WIDTH + VeggieWar.PLAYER_MAX_WIDTH * 1.5) {
             this.player.position.x -= VeggieWar.SCREEN_WIDTH + VeggieWar.PLAYER_MAX_WIDTH;
+            this.left_hand.position.x -= VeggieWar.SCREEN_WIDTH + VeggieWar.PLAYER_MAX_WIDTH;
+            this.right_hand.position.x -= VeggieWar.SCREEN_WIDTH + VeggieWar.PLAYER_MAX_WIDTH;
         }
 
-        if(this.player.position.y < 0) {
+        if(this.player.position.y < VeggieWar.PLAYER_MAX_WIDTH / 2) {
             this.player.position.y += VeggieWar.SCREEN_HEIGHT + VeggieWar.PLAYER_MAX_HEIGHT;
+            this.left_hand.position.y += VeggieWar.SCREEN_HEIGHT + VeggieWar.PLAYER_MAX_HEIGHT;
+            this.right_hand.position.y += VeggieWar.SCREEN_HEIGHT + VeggieWar.PLAYER_MAX_HEIGHT;
         }
 
-        if(this.player.position.y > VeggieWar.SCREEN_HEIGHT + VeggieWar.PLAYER_MAX_HEIGHT) {
+        if(this.player.position.y > VeggieWar.SCREEN_HEIGHT + VeggieWar.PLAYER_MAX_HEIGHT * 1.5) {
             this.player.position.y -= VeggieWar.SCREEN_HEIGHT + VeggieWar.PLAYER_MAX_HEIGHT;
+            this.left_hand.position.y -= VeggieWar.SCREEN_HEIGHT + VeggieWar.PLAYER_MAX_HEIGHT;
+            this.right_hand.position.y -= VeggieWar.SCREEN_HEIGHT + VeggieWar.PLAYER_MAX_HEIGHT;
         }
 
         this.game.physics.arcade.collide(this.player, this.platformLayer);
@@ -79,6 +100,18 @@ VeggieWar.Game.prototype = {
                 this.player.body.velocity.x += this.game.time.physicsElapsed * 100;
             }
         }
+
+        if(this.player.body.velocity.x < 0) {
+            this.player.scale.x = 1;
+        } else if(this.player.body.velocity.x > 0) {
+            this.player.scale.x = -1;
+        }
+
+        var speed = 100;
+        var maxtime = 40;
+
+        this.game.physics.arcade.moveToXY(this.left_hand, this.player.position.x + 16, this.player.position.y + 4, speed, maxtime);
+        this.game.physics.arcade.moveToXY(this.right_hand, this.player.position.x - 16, this.player.position.y + 4, speed, maxtime);
 
         if(stoptween) {
             if(this.movetween != null) {
