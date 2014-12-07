@@ -1,10 +1,15 @@
-var SCREEN_WIDTH = 1920;
-var SCREEN_HEIGHT = 1080;
-
-
 var VeggieWar = VeggieWar || {};
 
-VeggieWar.game = new Phaser.Game(SCREEN_WIDTH, SCREEN_HEIGHT, Phaser.AUTO, '');
+VeggieWar.TILE_SIZE = 32;
+VeggieWar.TILE_WIDTH = 60;
+VeggieWar.TILE_HEIGHT = 32;
+
+VeggieWar.SCREEN_WIDTH = VeggieWar.TILE_SIZE * VeggieWar.TILE_WIDTH;
+VeggieWar.SCREEN_HEIGHT = VeggieWar.TILE_SIZE * VeggieWar.TILE_HEIGHT;
+VeggieWar.PLAYER_MAX_WIDTH = 1 * VeggieWar.TILE_SIZE;
+VeggieWar.PLAYER_MAX_HEIGHT = 2 * VeggieWar.TILE_SIZE;
+
+VeggieWar.game = new Phaser.Game(VeggieWar.SCREEN_WIDTH, VeggieWar.SCREEN_HEIGHT, Phaser.AUTO, '');
 
 VeggieWar.game.state.add('Boot', VeggieWar.Boot);
 VeggieWar.game.state.add('Preload', VeggieWar.Preload);
