@@ -2,19 +2,23 @@ var VeggieWar = VeggieWar || {};
 
 VeggieWar.Hand = function (player, left) {
     this.HAND_Y = 4;
-    this.HAND_MOVE_SPEED = 2000;
+    this.HAND_MOVE_SPEED = 1000;
     this.HAND_MOVE_TIME = 40;
-    this.HAND_FLY_TIME = 100;
+    this.HAND_FLY_TIME = 200;
 
-    this.GRAB_TIME = 3000;
+    this.GRAB_TIME = 500;
 
     this.STATE_FOLLOW = 0;
     this.STATE_FLY = 1;
     this.STATE_GRAB = 2;
 
+    this.BAMBOO_SCORE = 100;
+    this.PLAYER_SCORE = 250;
+
     this.player = player.player;
     this.game = player.game;
     this.mango = player;
+    this.veggie = player.veggie;
     this.left = left;
 
     this.create();
@@ -24,12 +28,14 @@ VeggieWar.Hand.prototype = {
     setState: function(state) {
         this.state = state;
         this.elapsed = 0;
+        this.hand.body.velocity.set(0, 0);
     },
 
     fly: function(direction) {
         if(this.state == this.STATE_FOLLOW && this.elapsed >= this.HAND_FLY_TIME) {
             this.setState(this.STATE_FLY);
             direction.normalize();
+            this.direction = direction;
             this.hand.body.velocity.setTo(direction.x * this.HAND_MOVE_SPEED, direction.y * this.HAND_MOVE_SPEED);
             return true;
         }
@@ -38,7 +44,6 @@ VeggieWar.Hand.prototype = {
     },
 
     create: function() {
-        this.setState(this.STATE_FOLLOW);
         this.player_x = this.mango.PLAYER_WIDTH;
 
         if(!this.left) {
@@ -49,13 +54,14 @@ VeggieWar.Hand.prototype = {
         this.hand.anchor.setTo(0.5, 0.5);
         this.game.physics.arcade.enable(this.hand);
         this.hand.body.allowRotation = false;
+        this.setState(this.STATE_FOLLOW);
 
         if(!this.left) {
             this.hand.scale.x = -1;
         }
     },
 
-    update: function(players) {
+    update: function() {
         this.elapsed += this.game.time.physicsElapsedMS;
         if(this.state == this.STATE_FOLLOW) {
             // hands follow player
@@ -81,23 +87,45 @@ VeggieWar.Hand.prototype = {
             }
         }
         else if(this.state == this.STATE_FLY) {
+            var me = this;
+            this.veggie.players.forEach(function(player) {
+                if(player == me.mango) {
+                    return;
+                }
+                me.game.physics.arcade.overlap(me.hand, player.player, function(hand, pl){
+                    player.push(me.direction);
+                    me.mango.addScore(me.PLAYER_SCORE);
+                    me.setState(me.STATE_FOLLOW);
+                });
+            });
+
+            me.game.physics.arcade.overlap(me.hand, this.veggie.bamboos, function(hand, bamboo) {
+                if(bamboo.me.destroy()) {
+                    me.mango.addScore(me.BAMBOO_SCORE);
+                    me.setState(me.STATE_FOLLOW);
+                }
+            });
+
+            if(this.state == this.STATE_FOLLOW) {
+                return;
+            }
+
             this.game.physics.arcade.overlap(this.hand, this.mango.veggie.platformLayer);
 
             var touching = this.hand.body.blocked;
             touching = touching.left || touching.right || touching.up || touching.down;
 
             if(touching) {
-                if(this.mango.setOnRope(this.hand)) {
-                    this.hand.body.velocity.set(0, 0);
+                this.mango.push(this.direction);
+                this.setState(this.STATE_GRAB);
+                /*if(this.mango.setOnRope(this)) {
                     this.setState(this.STATE_GRAB);
                 }
                 else {
-                    this.hand.body.velocity.set(0, 0);
                     this.setState(this.STATE_FOLLOW);
-                }
+                }*/
             }
             else if(this.elapsed >= this.HAND_FLY_TIME) {
-                this.hand.body.velocity.set(0, 0);
                 this.setState(this.STATE_FOLLOW);
             }
         }
@@ -110,77 +138,6 @@ VeggieWar.Hand.prototype = {
     }
 };
 
-VeggieWar.GamePadController = function(pad, game) {
-    this.pad = pad;
-    this.game = game;
-};
-
-VeggieWar.GamePadController.prototype = {
-    isReady: function() {
-        return this.game.input.gamepad.supported && this.game.input.gamepad.active && this.pad.connected;
-    },
-
-    create: function(player) {
-        this.player = player;
-        this.left = false;
-        this.right = false;
-        this.up = false;
-        this.down = false;
-
-        this.isdown = false;
-    },
-
-    update: function() {
-        var isdown = this.pad.isDown(Phaser.Gamepad.XBOX360_RIGHT_TRIGGER);
-        if(isdown != this.isdown) {
-            this.isdown = isdown;
-            if(isdown) {
-                var direction = new Phaser.Point(this.pad.axis(Phaser.Gamepad.XBOX360_STICK_RIGHT_X), this.pad.axis(Phaser.Gamepad.XBOX360_STICK_RIGHT_Y))
-                this.player.fire(direction);
-            }
-        }
-
-        this.left = this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT) || this.pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -0.1;
-        this.right = this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT) || this.pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) > 0.1;
-        this.up = this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_UP) || this.pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) < -0.1;
-        this.down = this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_DOWN) || this.pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) > 0.1;
-    }
-};
-
-VeggieWar.KeyboardMouseController = function() {
-};
-
-VeggieWar.KeyboardMouseController.prototype = {
-    isReady: function() {
-        return true;
-    },
-
-    mouseDown: function() {
-        var direction = new Phaser.Point(this.player.game.input.x + this.player.game.camera.x - this.player.player.position.x,
-            this.player.game.input.y + this.player.game.camera.y - this.player.player.position.y);
-
-        this.player.fire(direction);
-    },
-
-    create: function(player) {
-        this.player = player;
-        this.left = false;
-        this.right = false;
-        this.up = false;
-        this.down = false;
-
-        this.player.game.input.onDown.add(this.mouseDown, this);
-        this.cursors = this.player.game.input.keyboard.createCursorKeys();
-    },
-
-    update: function() {
-        this.left = this.cursors.left.isDown;
-        this.right = this.cursors.right.isDown;
-        this.up = this.cursors.up.isDown;
-        this.down = this.cursors.down.isDown;
-    }
-};
-
 VeggieWar.Player = function (game, controller) {
     this.game = game.game;
     this.veggie = game;
@@ -190,6 +147,16 @@ VeggieWar.Player = function (game, controller) {
     this.PLAYER_AIR_ACCELERATION = 100;
     this.PLAYER_JUMP_VELOCITY = 300;
     this.PLAYER_JUMP_SPEED_FACTOR = 1.4;
+    this.STATE_FREE = 0;
+    this.STATE_THROWN = 1;
+    this.STATE_ON_ROPE = 2;
+    this.STUN_TIME = 250;
+    this.THROW_POWER = 500;
+
+    this.FLASH_TIME = 300;
+
+    this.SCORE_MOVE_SPEED = 1000;
+    this.SCORE_MOVE_TIME = 40;
 
     this.controller = controller;
 
@@ -197,19 +164,26 @@ VeggieWar.Player = function (game, controller) {
 };
 
 VeggieWar.Player.prototype = {
+    push: function(direction) {
+        this.setState(this.STATE_THROWN);
+        this.player.body.velocity.add(direction.x * this.THROW_POWER, direction.y * this.THROW_POWER);
+    },
+
     setOnRope: function(hand) {
         if(hand != null) {
             if(this.on_rope != null)
                 return false;
 
-            this.on_rope = hand;
+            this.setState(this.STATE_ON_ROPE);
+            this.on_rope = hand.hand;
 
             this.player.body.velocity.setTo(0, 0);
             this.player.body.gravity.y = 0;
 
-            this.rope_distance = Phaser.Point.distance(hand.position, this.player.position);
+            this.rope_distance = Phaser.Point.distance(hand.hand.position, this.player.position);
         }
         else {
+            this.setState(this.STATE_FREE);
             this.on_rope = null;
 
             this.player.body.gravity.y = this.GRAVITY;
@@ -219,6 +193,10 @@ VeggieWar.Player.prototype = {
     },
 
     fire: function(direction) {
+        if(this.state != this.STATE_FREE) {
+            return;
+        }
+
         if(direction.x > 0) {
             if(!this.left_hand.fly(direction)){
                 this.right_hand.fly(direction);
@@ -229,6 +207,17 @@ VeggieWar.Player.prototype = {
                 this.left_hand.fly(direction);
             }
         }
+    },
+
+    setState: function(state) {
+        this.state = state;
+        this.elapsed = 0;
+    },
+
+    addScore: function(amount) {
+        this.score += amount;
+        this.score_text.text = this.score;
+        this.game.add.tween(this.score_text.scale).to({x: 3, y: 3}, this.FLASH_TIME / 3, Phaser.Easing.Quadratic.InOut).to({x: 1, y: 1}, this.FLASH_TIME, Phaser.Easing.Quadratic.InOut).start();
     },
 
     create: function () {
@@ -250,10 +239,22 @@ VeggieWar.Player.prototype = {
         this.move = {x: 0};
         this.movetween = null;
 
+        this.score = 0;
+        var style = { font: "12px sans", fill: "#ff1727", align: "center" };
+        this.score_text = this.game.add.text(0, 10, '0', style);
+        this.score_text.anchor.setTo(0.5, 0.5);
+
+        this.score_sprite = this.game.add.sprite(this.player.position.x, this.player.position.y, null);
+        this.score_sprite.addChild(this.score_text);
+        this.game.physics.arcade.enable(this.score_sprite);
+
+        this.setState(this.STATE_FREE);
+
         this.controller.create(this);
     },
 
-    update: function(players) {
+    update: function() {
+        this.elapsed += this.game.time.physicsElapsedMS;
         this.controller.update();
 
         this.game.physics.arcade.collide(this.player, this.veggie.platformLayer);
@@ -262,7 +263,7 @@ VeggieWar.Player.prototype = {
         this.left_hand.follow_player = true;
         this.right_hand.follow_player = true;
 
-        if(this.on_rope == null) {
+        if(this.state == this.STATE_FREE) {
             // ground movement
             if(this.player.body.onFloor()) {
                 if(this.controller.left) {
@@ -293,8 +294,13 @@ VeggieWar.Player.prototype = {
                 }
             }
         }
+        else if(this.state == this.STATE_THROWN) {
+            if(this.elapsed > this.STUN_TIME) {
+                this.setState(this.STATE_FREE);
+            }
+        }
         // on rope!
-        else {
+        else if(this.state == this.STATE_ON_ROPE) {
             var player_accel = 0;
 
             if(this.controller.left) {
@@ -339,8 +345,8 @@ VeggieWar.Player.prototype = {
             this.player.body.velocity.setTo(d.x * dlength, d.y * dlength);//*/
         }
 
-        this.left_hand.update(players);
-        this.right_hand.update(players);
+        this.left_hand.update();
+        this.right_hand.update();
 
         // warp player on the side of the screen
 
@@ -371,6 +377,7 @@ VeggieWar.Player.prototype = {
             this.player.bringToTop();
             this.right_hand.hand.bringToTop();
         }
+        this.score_sprite.bringToTop();
 
         // jumping of player while on ground and moving
 
@@ -396,6 +403,8 @@ VeggieWar.Player.prototype = {
         this.player.position.y += this.player.body.offset.y;
         this.player.body.offset.y = this.move.x;
         this.player.position.y -= this.move.x;
+
+        this.game.physics.arcade.moveToXY(this.score_sprite, this.player.position.x, this.player.position.y, this.SCORE_MOVE_SPEED, this.SCORE_MOVE_TIME);
     }
 };
 

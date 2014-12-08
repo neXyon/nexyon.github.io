@@ -1,6 +1,7 @@
 var VeggieWar = VeggieWar || {};
 
 VeggieWar.Game = function () {
+    this.BAMBOO_LIKELYHOOD = 0.2;
 };
 
 VeggieWar.Game.prototype = {
@@ -22,7 +23,15 @@ VeggieWar.Game.prototype = {
 
         this.game.input.gamepad.start();
 
+        this.elapsed = 0;
+
         this.players = [];
+
+        this.bamboos = this.game.add.group();
+
+        this.bamboo_spawns = [];
+        this.bamboo_spawns.push(new VeggieWar.Bamboo(this, {x: 1600, y: 500}));
+        this.bamboo_spawns[0].spawn();
 
         this.controllers = [];
 
@@ -34,6 +43,35 @@ VeggieWar.Game.prototype = {
     },
 
     update: function() {
+        this.elapsed += this.game.time.physicsElapsed;
+
+        var free_spawns = 0;
+        var likelyhood = this.BAMBOO_LIKELYHOOD * this.game.time.physicsElapsed;
+
+        this.bamboo_spawns.forEach(function(spawn) {
+            if(!spawn.isOccupied()) {
+                free_spawns++;
+            }
+            else {
+                likelyhood *= 0.75;
+            }
+        });
+
+        if((free_spawns > 0) && (this.game.rnd.frac() < likelyhood)) {
+            free_spawns = this.game.rnd.integerInRange(1, free_spawns);
+
+            for(var i = 0; i < this.bamboo_spawns.length; i++) {
+                if(!this.bamboo_spawns[i].isOccupied()) {
+                    free_spawns--;
+
+                    if(free_spawns == 0) {
+                        this.bamboo_spawns[i].spawn();
+
+                        break;
+                    }
+                }
+            }
+        }
 
         for(var i = 0; i < this.controllers.length; i++) {
             if(this.controllers[i].isReady()) {
@@ -44,7 +82,7 @@ VeggieWar.Game.prototype = {
         }
 
         for(var i = 0; i < this.players.length; i++) {
-            this.players[i].update(players);
+            this.players[i].update(this.players);
         }
     }
 };

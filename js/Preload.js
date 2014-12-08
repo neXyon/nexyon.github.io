@@ -16,6 +16,7 @@ VeggieWar.Preload.prototype = {
         this.load.image('grass', 'assets/grass.png');
         this.load.image('player', 'assets/player.png');
         this.load.image('hand', 'assets/hand.png');
+        this.load.image('bamboo', 'assets/bamboo.png');
     },
     create: function () {
         this.state.start('Game');
