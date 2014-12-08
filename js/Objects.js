@@ -32,6 +32,8 @@ VeggieWar.Bamboo.prototype = {
             return false;
         }
 
+        this.bamboo.anchor.setTo(0.5, 0.5);
+        this.bamboo.position.y -= this.bamboo.height / 2;
         this.game.add.tween(this.bamboo.body).to({angularVelocity: 1000}, this.GROW_SPEED, Phaser.Easing.Quadratic.InOut).start().onComplete.add(function() {
             this.kill();
         }, this.bamboo);
