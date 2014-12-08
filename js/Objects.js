@@ -21,6 +21,7 @@ VeggieWar.Bamboo.prototype = {
         this.bamboo.scale.setTo(0.5, 0.01);
         this.bamboo.me = this;
         this.game.physics.arcade.enable(this.bamboo);
+        this.game.sound.play('s_grow');
         this.bamboo.body.allowRotation = true;
 
         this.game.add.tween(this.bamboo.scale).to({x: 1, y: 1}, this.GROW_SPEED, Phaser.Easing.Quadratic.InOut).start();

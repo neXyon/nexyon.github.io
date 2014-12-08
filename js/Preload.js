@@ -17,6 +17,13 @@ VeggieWar.Preload.prototype = {
         this.load.image('player', 'assets/player.png');
         this.load.image('hand', 'assets/hand.png');
         this.load.image('bamboo', 'assets/bamboo.png');
+
+        this.load.audio('s_bamboo', 'assets/bamboo.ogg', true);
+        this.load.audio('s_grab', 'assets/grab.ogg', true);
+        this.load.audio('s_grow', 'assets/grow.ogg', true);
+        this.load.audio('s_hit', 'assets/hit.ogg', true);
+        this.load.audio('s_jump', 'assets/jump.ogg', true);
+        this.load.audio('s_shoot', 'assets/shoot.ogg', true);
     },
     create: function () {
         this.state.start('Game');

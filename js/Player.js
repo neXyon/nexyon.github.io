@@ -95,6 +95,7 @@ VeggieWar.Hand.prototype = {
                 me.game.physics.arcade.overlap(me.hand, player.player, function(hand, pl){
                     player.push(me.direction);
                     me.mango.addScore(me.PLAYER_SCORE);
+                    me.game.sound.play('s_hit');
                     me.setState(me.STATE_FOLLOW);
                 });
             });
@@ -102,6 +103,7 @@ VeggieWar.Hand.prototype = {
             me.game.physics.arcade.overlap(me.hand, this.veggie.bamboos, function(hand, bamboo) {
                 if(bamboo.me.destroy()) {
                     me.mango.addScore(me.BAMBOO_SCORE);
+                    me.game.sound.play('s_bamboo');
                     me.setState(me.STATE_FOLLOW);
                 }
             });
@@ -118,6 +120,7 @@ VeggieWar.Hand.prototype = {
             if(touching) {
                 this.mango.push(this.direction);
                 this.setState(this.STATE_GRAB);
+                this.game.sound.play('s_grab');
                 /*if(this.mango.setOnRope(this)) {
                     this.setState(this.STATE_GRAB);
                 }
@@ -198,15 +201,25 @@ VeggieWar.Player.prototype = {
             return;
         }
 
+        var shot = true;
+
         if(direction.x > 0) {
             if(!this.left_hand.fly(direction)){
-                this.right_hand.fly(direction);
+                if(!this.right_hand.fly(direction)) {
+                    shot = false;
+                }
             }
         }
         else {
             if(!this.right_hand.fly(direction)){
-                this.left_hand.fly(direction);
+                if(!this.left_hand.fly(direction)) {
+                    shot = false;
+                }
             }
+        }
+
+        if(shot) {
+            this.game.sound.play('s_shoot');
         }
     },
 
@@ -283,6 +296,7 @@ VeggieWar.Player.prototype = {
                     stop_move_tween = true;
                     this.player.body.velocity.y = -this.PLAYER_JUMP_VELOCITY;
                     this.player.body.velocity.x *= this.PLAYER_JUMP_SPEED_FACTOR;
+                    this.game.sound.play('s_jump');
                 }
             }
             // air movement
