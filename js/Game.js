@@ -1,11 +1,14 @@
 var VeggieWar = VeggieWar || {};
 
 VeggieWar.Game = function () {
-    this.BAMBOO_LIKELYHOOD = 0.2;
+    this.BAMBOO_LIKELYHOOD = 10.0;
 };
 
 VeggieWar.Game.prototype = {
     create: function () {
+        this.bamboo_spawns = [];
+        this.player_spawns = [];
+
         this.map = this.game.add.tilemap('map');
 
         this.map.addTilesetImage('grass', 'grass');
@@ -15,6 +18,18 @@ VeggieWar.Game.prototype = {
 
         this.map.setCollisionBetween(1, 100, true, this.platformLayer);
         this.backgroundLayer.resizeWorld();
+
+        var me = this;
+
+        this.map.objects['bamboo'].forEach(function(bamboo){
+            me.bamboo_spawns.push(new VeggieWar.Bamboo(me, {x: bamboo.x, y: bamboo.y}));
+        });
+
+        this.map.objects['player'].forEach(function(player){
+            me.player_spawns.push({x: player.x, y: player.y});
+        });
+
+        this.bamboos = this.game.add.group();
 
         this.game.camera.setPosition(VeggieWar.PLAYER_MAX_WIDTH, VeggieWar.PLAYER_MAX_HEIGHT);
         this.game.camera.update();
@@ -26,12 +41,6 @@ VeggieWar.Game.prototype = {
         this.elapsed = 0;
 
         this.players = [];
-
-        this.bamboos = this.game.add.group();
-
-        this.bamboo_spawns = [];
-        this.bamboo_spawns.push(new VeggieWar.Bamboo(this, {x: 1600, y: 500}));
-        this.bamboo_spawns[0].spawn();
 
         this.controllers = [];
 
@@ -57,7 +66,7 @@ VeggieWar.Game.prototype = {
             }
         });
 
-        if((free_spawns > 0) && (this.game.rnd.frac() < likelyhood)) {
+            if((free_spawns > 0) && (this.game.rnd.frac() < likelyhood)) {
             free_spawns = this.game.rnd.integerInRange(1, free_spawns);
 
             for(var i = 0; i < this.bamboo_spawns.length; i++) {
@@ -75,7 +84,7 @@ VeggieWar.Game.prototype = {
 
         for(var i = 0; i < this.controllers.length; i++) {
             if(this.controllers[i].isReady()) {
-                this.players.push(new VeggieWar.Player(this, this.controllers[i]));
+                this.players.push(new VeggieWar.Player(this, this.controllers[i], this.player_spawns.pop()));
                 this.controllers.splice(i, 1);
                 i--;
             }

@@ -3,14 +3,111 @@
  <tileset firstgid="1" name="grass" tilewidth="32" tileheight="32">
   <image source="grass.png" trans="ff00ff" width="192" height="192"/>
  </tileset>
+ <tileset firstgid="37" name="bamboo" tilewidth="32" tileheight="64">
+  <image source="bamboo.png" trans="ff00ff" width="32" height="64"/>
+ </tileset>
+ <tileset firstgid="38" name="mango" tilewidth="32" tileheight="56">
+  <image source="player.png" trans="ff00ff" width="32" height="56"/>
+ </tileset>
  <layer name="platforms" width="62" height="36">
   <data encoding="base64" compression="zlib">
-   eJztlzsOwCAMQxl7/xN3qsRA+ShObAhPYo5tkghK4fCAzmotbxB6o0BmzAChbxevLSx6s/qOwGuuIu7Kuyes+9tzP6nORPSdKGZwItkzztxnd+YwnJjbiidr/yj236wWpF61DC48dtnLaG2KHlvM/q9WdqhVgwo9TZaeVvP5R0tn5F2xcor6I49qZaH2mzmHHgqZKNVX2QsMGBpGtdRmlbm/mXi8V0a1ZmqeCOK9vDuZvNZk8/uh4Hv1z2qZzcj+Vt8lLzjACQk=
+   eJztljkSwCAIRS29/4nTJE3GhUU24c1YJQIfkKG1oigKPP09WelNJgcn7fbBOcHI7so+xr9EzBI5oPqH/FfIgenbm4igcVYP7Lz53+XEoZE3qDboN2zcUd4ApDduZNX/kvvH7XmdkVX3R5T6a8fnLScWdfKSg51/6fiwM9lyflsisa/sfHnQbYHmnuCVzLoz4kH37t1BD9aXFpnmiZU+is+TfWUNNU4PWjn+Peg+NY8wcWjWi7qjU2xy7kV5qxwyaS1seQAejwhB
   </data>
  </layer>
  <layer name="background" width="62" height="36">
   <data encoding="base64" compression="zlib">
-   eJztWMtqw0AMdFtoL4X2klzjQ///GxsfBEId7Ui78toJHVgI2LG0eowey1KPl/t5bZxroaxP8vyDvM901ec9KQvh637WgvMD9Nf63Zz3M7oKmI2trJa+VdD6XxbuG4HW9Rs81/6p1rkCor/oznyDgHzf850WKvNKQ3RnPkfPUJwiH1vde/SL4JKQYeMd2XHDiB+t7iIncv8IB6B8y/K3h5Fc3XRHumX8w76/Ljk+tHku0PxUAWbfal6w6K1fo2Dxujf3e/k8EmePAC+uEac9oy08rtHI5txIvZqJTM5F7uTVq6wdvF7lCDtGarCXQ4Jo/HjcfwQfeXdCd7E5JDUxytk2Dnv6kmpE690t8E6vTP3NVv9+Jn6p5r5WPzQ7Jlpg3Jf1m3wP7Se8ONts/2bO3rGRma8E2m82Xq7gHQ9yX7S/2js2euYrPSN7dovorf9r48OLjZlcgWqH5APy1XaHCHe2uBbxo8ZMrojuHStmGiartwfrwcy9o7c3ZD0YipPZ9bOqRooN9G97xN4oTmb3lVXzQQZsvzxTh8h84O1fKuTLyfTXbG8c3UWy+WDG/iWz96viVTYfRPuAWXzl9Rajs61FZMdbJSuqz7r89RPj1RFZbO8kONOcU4EWJ69LjY3PDj3fHQXG7ZnDOElkZea7fzwffgF1KSNa
+   eJztWMlKBEEMbRWci6AX5zpz8P+/0QkYCCEvS1Wqe5B+EHDpSmWvJNt2DG4Pugv6OUiOEydm8PKg1z96P1iWPXERP39v/TaQdp3lq3nN8OS69aX+Lm2A+Gd0uqjfNd+KzJqXxbNqA9Jf667xEcjB98u7kV0RTw/6bbF4Vvghvpr0G4Z0su7Wdv0EPCuw5GV+KCc6czj7xt8S33QB5QRhJCZWwKsTyGeR31hvjitJyOYkx5uilW8cqhMRpN+07a7GNwis79X438rY8GLyvuE6RvZhfyAeGbnlWR0fK/MR1VP0ndSfY8PyFemQkdurO3vUxyy8+GBkdZ65a+/6GL23RF3xKe+Kertn6/O7euVsD2blxhE26eyVCSjeOMas3Kj20h12qvTKHfOplxsEa/aRJGXy6mpWxkyv3D2fZmYKC17sSGRjN+qVZ/qADDI1Gckje4uOOU/LVYnN1fUK+SmqMTN3ZWLyWWacTkT1ifAf9ZZA892ee/Wotlcoyk++qzLfdcCS1ZpBRhHpoev7Kr2lLz1Y+4QRsvZS1n5Qf6/PzMaVtm8kbxd0v5J5nzJzISOKE2nfUYzMIfrtysRzVO9lTFb9NLNbY1j77ehs1ufoTkJkO5QnHjxdMj0X0gn155HNvZ02wuh+jYBsGuXe6DnvbBXV/ZqkzK7eouictvFMrp44EeEXEg8j4g==
   </data>
  </layer>
+ <objectgroup name="bamboo">
+  <object gid="37" x="706" y="830"/>
+  <object gid="37" x="768.333" y="576.333"/>
+  <object gid="37" x="1248" y="704"/>
+  <object gid="37" x="1150.67" y="702.667"/>
+  <object gid="37" x="1025.33" y="638.667"/>
+  <object gid="37" x="926.667" y="606.667"/>
+  <object gid="37" x="894.667" y="894.667"/>
+  <object gid="37" x="964" y="990.667"/>
+  <object gid="37" x="1121.33" y="1022.67"/>
+  <object gid="37" x="1025.33" y="1022.67"/>
+  <object gid="37" x="1312" y="893.333"/>
+  <object gid="37" x="1378.67" y="894.667"/>
+  <object gid="37" x="1490.67" y="894.667"/>
+  <object gid="37" x="1565.33" y="894.667"/>
+  <object gid="37" x="1397.33" y="894.667"/>
+  <object gid="37" x="1480" y="542.667"/>
+  <object gid="37" x="1524" y="544"/>
+  <object gid="37" x="1613.33" y="574.667"/>
+  <object gid="37" x="1713.33" y="606.667"/>
+  <object gid="37" x="1781.33" y="606.667"/>
+  <object gid="37" x="1798.67" y="989.333"/>
+  <object gid="37" x="1873.33" y="990.667"/>
+  <object gid="37" x="1893.33" y="861.333"/>
+  <object gid="37" x="1868" y="605.333"/>
+  <object gid="37" x="1905.33" y="348"/>
+  <object gid="37" x="1836" y="318.667"/>
+  <object gid="37" x="1788" y="317.333"/>
+  <object gid="37" x="1685.33" y="188"/>
+  <object gid="37" x="1620" y="188"/>
+  <object gid="37" x="1513.33" y="158.667"/>
+  <object gid="37" x="1329.33" y="221.333"/>
+  <object gid="37" x="1269.33" y="190.667"/>
+  <object gid="37" x="1329.33" y="510.667"/>
+  <object gid="37" x="1270.67" y="509.333"/>
+  <object gid="37" x="1201.33" y="444"/>
+  <object gid="37" x="1068" y="446.667"/>
+  <object gid="37" x="1140" y="444"/>
+  <object gid="37" x="852" y="381.333"/>
+  <object gid="37" x="909.333" y="350.667"/>
+  <object gid="37" x="988" y="349.333"/>
+  <object gid="37" x="1018.67" y="189.333"/>
+  <object gid="37" x="933.333" y="190.667"/>
+  <object gid="37" x="813.333" y="158.667"/>
+  <object gid="37" x="749.333" y="126.667"/>
+  <object gid="37" x="861.333" y="158.667"/>
+  <object gid="37" x="141.333" y="190.667"/>
+  <object gid="37" x="210.667" y="190.667"/>
+  <object gid="37" x="305.333" y="221.333"/>
+  <object gid="37" x="418.667" y="382.667"/>
+  <object gid="37" x="504" y="286.667"/>
+  <object gid="37" x="628" y="284"/>
+  <object gid="37" x="290.667" y="446.667"/>
+  <object gid="37" x="229.333" y="413.333"/>
+  <object gid="37" x="33.3333" y="350.667"/>
+  <object gid="37" x="81.3333" y="350.667"/>
+  <object gid="37" x="174.667" y="349.333"/>
+  <object gid="37" x="365.333" y="382.667"/>
+  <object gid="37" x="109.333" y="638.667"/>
+  <object gid="37" x="172" y="640"/>
+  <object gid="37" x="210.667" y="640"/>
+  <object gid="37" x="277.333" y="637.333"/>
+  <object gid="37" x="338.667" y="672"/>
+  <object gid="37" x="401.333" y="670.667"/>
+  <object gid="37" x="656" y="828"/>
+  <object gid="37" x="568" y="832"/>
+  <object gid="37" x="504" y="829.333"/>
+  <object gid="37" x="453.333" y="830.667"/>
+  <object gid="37" x="356" y="828"/>
+  <object gid="37" x="244" y="829.333"/>
+  <object gid="37" x="24" y="862.667"/>
+  <object gid="37" x="66.6667" y="862.667"/>
+  <object gid="37" x="153.333" y="861.333"/>
+  <object gid="37" x="42.6667" y="990.667"/>
+  <object gid="37" x="141.333" y="989.333"/>
+  <object gid="37" x="193.333" y="1022.67"/>
+  <object gid="37" x="573.333" y="989.333"/>
+  <object gid="37" x="654.667" y="1022.67"/>
+  <object gid="37" x="504" y="956"/>
+  <object gid="37" x="454.667" y="956"/>
+  <object gid="37" x="580" y="542.667"/>
+  <object gid="37" x="621.333" y="541.333"/>
+  <object gid="37" x="704" y="573.333"/>
+ </objectgroup>
+ <objectgroup name="player">
+  <object gid="38" x="561.333" y="277.333"/>
+  <object gid="38" x="1652" y="181.333"/>
+  <object gid="38" x="1104" y="696"/>
+  <object gid="38" x="1446.67" y="888"/>
+  <object gid="38" x="94.6667" y="982.667"/>
+ </objectgroup>
 </map>

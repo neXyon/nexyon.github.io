@@ -138,7 +138,7 @@ VeggieWar.Hand.prototype = {
     }
 };
 
-VeggieWar.Player = function (game, controller) {
+VeggieWar.Player = function (game, controller, location) {
     this.game = game.game;
     this.veggie = game;
     this.GRAVITY = 400;
@@ -159,6 +159,7 @@ VeggieWar.Player = function (game, controller) {
     this.SCORE_MOVE_TIME = 40;
 
     this.controller = controller;
+    this.location = location;
 
     this.create();
 };
@@ -223,7 +224,7 @@ VeggieWar.Player.prototype = {
     create: function () {
         //this.group = this.game.add.group();
 
-        this.player = this.game.add.sprite(1024, 600, 'player');
+        this.player = this.game.add.sprite(this.location.x, this.location.y, 'player');
         this.player.anchor.setTo(0.5, 0.5);
 
         this.left_hand = new VeggieWar.Hand(this, true);
